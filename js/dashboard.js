@@ -57,32 +57,119 @@ async function renderDashboard() {
       // Render ulang dengan data segar dari server
       renderDashboardWithData(container, res.data);
     } else {
+      // Jika mode Demo atau user ingin fallback
+      const user = window.AppState?.user;
+      if (user && (user.userId === 'USR-ADMIN' || user.userId === 'USR-DEMO-MHS')) {
+        const demoData = getDefaultDashboardData();
+        renderDashboardWithData(container, demoData);
+        showToast('Menampilkan data demo visual (Mode Cepat)', 'info', 3000);
+        return;
+      }
+
       if (!cachedData) {
-        container.innerHTML = `
-          <div class="card p-6 text-center text-slate-600">
-            <div class="text-4xl mb-3">⚠️</div>
-            <h3 class="font-bold text-lg mb-1">Gagal Memuat Dashboard</h3>
-            <p class="text-sm mb-4">${res?.message || 'Terjadi kendala saat mengambil data.'}</p>
-            <button class="btn btn-primary" onclick="renderDashboard()">Coba Lagi</button>
-          </div>
-        `;
-        showToast(res?.message || 'Gagal memuat data dashboard', 'error');
+        renderDashboardConnectionError(container, res?.message);
       }
     }
   } catch (err) {
     console.error('Error renderDashboard:', err);
+    const user = window.AppState?.user;
+    if (user && (user.userId === 'USR-ADMIN' || user.userId === 'USR-DEMO-MHS')) {
+      const demoData = getDefaultDashboardData();
+      renderDashboardWithData(container, demoData);
+      showToast('Menampilkan data demo visual (Mode Cepat)', 'info', 3000);
+      return;
+    }
+
     if (!cachedData) {
-      container.innerHTML = `
-        <div class="card p-6 text-center text-slate-600">
-          <div class="text-4xl mb-3">📡</div>
-          <h3 class="font-bold text-lg mb-1">Koneksi Terputus</h3>
-          <p class="text-sm mb-4">Gagal terhubung ke server Google Apps Script.</p>
-          <button class="btn btn-primary" onclick="renderDashboard()">Muat Ulang</button>
-        </div>
-      `;
-      showToast('Gagal terhubung ke server', 'error');
+      renderDashboardConnectionError(container, err.message);
     }
   }
+}
+
+/**
+ * Tampilan status jika gagal terhubung ke GAS
+ */
+function renderDashboardConnectionError(container, detailMsg) {
+  container.innerHTML = `
+    <div class="max-w-xl mx-auto my-12 bg-white rounded-3xl p-8 border border-slate-100 shadow-xl text-center">
+      <div class="w-16 h-16 rounded-3xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto mb-4 text-3xl">
+        📡
+      </div>
+      <h3 class="font-bold text-xl text-slate-900 mb-2">Koneksi Backend Google Apps Script</h3>
+      <p class="text-xs text-slate-500 mb-6 leading-relaxed">
+        Frontend belum berhasil menerima data dari URL Web App.
+        ${detailMsg ? `<br><span class="font-mono text-[11px] text-rose-500 bg-rose-50 px-2 py-0.5 rounded mt-1 inline-block">${escapeHtml(detailMsg)}</span>` : ''}
+      </p>
+
+      <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-left text-xs text-slate-700 space-y-2 mb-6">
+        <p class="font-bold text-slate-900 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px] text-amber-500">checklist</span>
+          <span>3 Hal yang Perlu Diperiksa:</span>
+        </p>
+        <ol class="list-decimal list-inside space-y-1 text-[11px] text-slate-600">
+          <li><strong>GAS_URL di config.js</strong>: Sudah diganti dengan URL Web App asli milik Anda (berakhiran <code>/exec</code>)?</li>
+          <li><strong>Setelan Akses Web App</strong>: Saat deploy, pastikan <em>"Who has access"</em> dipilih <strong>"Anyone"</strong>.</li>
+          <li><strong>Setup Database</strong>: Sudahkah menjalankan fungsi <code>setupAppEnvironment</code> di editor GAS?</li>
+        </ol>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+        <button class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-md transition" onclick="renderDashboard()">
+          Coba Hubungkan Ulang
+        </button>
+        <button class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition" onclick="loadDemoDashboardData()">
+          Jelajahi dengan Data Demo
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function loadDemoDashboardData() {
+  const container = document.getElementById('dashboard-container') || document.getElementById('app-main-view');
+  if (container) {
+    renderDashboardWithData(container, getDefaultDashboardData());
+    showToast('Mode demo aktif! Anda dapat menjelajahi seluruh antarmuka.', 'success', 3500);
+  }
+}
+
+function getDefaultDashboardData() {
+  const user = window.AppState?.user || { nama: 'Mahasiswa', email: 'demo@univ.ac.id', peran: 'Mahasiswa', planType: 'PRO' };
+  return {
+    user: user,
+    stats: {
+      tasksCompleted: 8,
+      activeProjects: 4,
+      savedRefs: 24,
+      groupMembers: 6,
+      trends: { tasks: '+3', projects: '4', refs: '+12', members: '6' }
+    },
+    todaysTasks: [
+      { id: 'TUGAS-01', title: 'Bab 1 Latar Belakang Skripsi', subject: 'Skripsi / TA', completed: false, time: 'Hari ini 23:59', priority: 'Tinggi' },
+      { id: 'TUGAS-02', title: 'Review Jurnal IEEE IoT', subject: 'Jaringan Komputer', completed: false, time: 'Besok 12:00', priority: 'Sedang' },
+      { id: 'TUGAS-03', title: 'Laporan Praktikum Basis Data', subject: 'Basis Data Lanjut', completed: true, time: 'Selesai', priority: 'Rendah' }
+    ],
+    deadlines: [
+      { id: 'DL-01', title: 'Proposal Skripsi Bab 1-3', subject: 'Tugas Akhir', date: new Date(Date.now() + 86400000 * 2).toISOString(), formattedDate: '2 hari lagi', status: 'Dalam Proses' },
+      { id: 'DL-02', title: 'Makalah Analisis Algoritma', subject: 'Desain Algoritma', date: new Date(Date.now() + 86400000 * 5).toISOString(), formattedDate: '5 hari lagi', status: 'Draf Awal' },
+      { id: 'DL-03', title: 'Slide Presentasi Sidang Antara', subject: 'Seminar Proposal', date: new Date(Date.now() + 86400000 * 9).toISOString(), formattedDate: '9 hari lagi', status: 'Belum Mulai' }
+    ],
+    activeProjects: [
+      { projectId: 'PRJ-01', judulTugas: 'Pengembangan Sistem Rekomendasi Skripsi', mataKuliah: 'Tugas Akhir', statusProgres: 'Dalam Proses', deadline: '2026-11-20', prioritas: 'Tinggi', jenisTugas: 'Skripsi' },
+      { projectId: 'PRJ-02', judulTugas: 'Makalah Komparasi Algoritma Enkripsi', mataKuliah: 'Keamanan Siber', statusProgres: 'Dalam Proses', deadline: '2026-11-25', prioritas: 'Sedang', jenisTugas: 'Makalah' },
+      { projectId: 'PRJ-03', judulTugas: 'Laporan Analisis Performa Cloud GAS', mataKuliah: 'Komputasi Awan', statusProgres: 'Draf Awal', deadline: '2026-12-01', prioritas: 'Sedang', jenisTugas: 'Laporan' }
+    ],
+    chartData: {
+      sevenDays: [2, 4, 3, 5, 4, 6, 8],
+      categories: [
+        { label: 'Makalah', count: 5, color: '#4F46E5' },
+        { label: 'Laporan', count: 3, color: '#06B6D4' },
+        { label: 'Skripsi', count: 2, color: '#10B981' },
+        { label: 'Lainnya', count: 2, color: '#F59E0B' }
+      ]
+    },
+    aiUsage: { used: 4, limit: 50, plan: 'PRO' }
+  };
 }
 
 /**

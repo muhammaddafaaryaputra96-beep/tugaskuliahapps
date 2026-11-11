@@ -5,7 +5,7 @@
 
 const CONFIG = {
   // Masukkan URL Web App Anda di dalam tanda petik di bawah ini:
-  GAS_URL: 'https://tugaskuliahapps.vercel.app/',
+  GAS_URL: 'https://script.google.com/macros/s/AKfycbzWHcAPE-KfVPaXiK0gdv6ICumugcYiCdncKtpB92qV7DYVszZKk4Z-3MdKpbLTe-AUCg/exec',
   
   APP_NAME: 'TugasKuliah Apps',
   APP_VERSION: '1.0.0',

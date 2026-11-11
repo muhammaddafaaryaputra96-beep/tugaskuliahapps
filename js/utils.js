@@ -6,6 +6,23 @@
  */
 
 // ============================================================
+// 0. SAFE CONFIG FALLBACK (Mencegah ReferenceError jika config.js typo)
+// ============================================================
+if (typeof window.CONFIG === 'undefined') {
+  window.CONFIG = {
+    GAS_URL: (typeof GAS_URL !== 'undefined') ? GAS_URL : '',
+    APP_NAME: 'TugasKuliah Apps',
+    APP_VERSION: '1.0.0',
+    STORAGE_KEYS: {
+      TOKEN: 'tk_session_token',
+      USER: 'tk_user_profile',
+      THEME: 'tk_theme',
+      DASHBOARD_CACHE: 'tk_dashboard_cache'
+    }
+  };
+}
+
+// ============================================================
 // 1. SESSION & AUTH STORAGE
 // ============================================================
 
@@ -84,10 +101,18 @@ const _inflightRequests = new Map();
  * @returns {Promise<Object>} Response JSON { success, data, message, ms, v }
  */
 async function api(action, payload = {}, method = 'POST') {
-  if (!CONFIG.GAS_URL || CONFIG.GAS_URL.includes('GANTI_DENGAN')) {
-    console.error('GAS_URL belum dikonfigurasi di js/config.js');
-    showToast('GAS_URL belum diatur di js/config.js. Harap perbarui konfigurasi deployment.', 'warning', 6000);
-    return { success: false, message: 'GAS_URL belum dikonfigurasi di frontend/js/config.js' };
+  const gasUrl = (CONFIG.GAS_URL || '').trim();
+  if (!gasUrl ||
+      gasUrl.includes('GANTI_DENGAN') ||
+      gasUrl.includes('MASUKKAN_URL') ||
+      !gasUrl.startsWith('https://script.google.com/macros/s/') ||
+      !gasUrl.endsWith('/exec')) {
+    console.error('[CONFIG ERROR] GAS_URL tidak valid:', gasUrl);
+    showToast('URL GAS_URL di js/config.js salah/belum diisi! Wajib format https://script.google.com/macros/s/.../exec', 'warning', 7000);
+    return {
+      success: false,
+      message: `URL Web App GAS_URL tidak valid ("${gasUrl || 'kosong'}"). Wajib dimulai dengan https://script.google.com/macros/s/ dan diakhiri /exec.`
+    };
   }
 
   const token = getToken();
@@ -115,11 +140,12 @@ async function api(action, payload = {}, method = 'POST') {
             queryParams.append(k, typeof payload[k] === 'object' ? JSON.stringify(payload[k]) : payload[k]);
           }
         });
-        response = await fetch(`${CONFIG.GAS_URL}?${queryParams.toString()}`);
+        response = await fetch(`${gasUrl}?${queryParams.toString()}`, { redirect: 'follow' });
       } else {
         // Method POST — Pure JSON string via text/plain untuk bypass CORS
-        response = await fetch(CONFIG.GAS_URL, {
+        response = await fetch(gasUrl, {
           method: 'POST',
+          redirect: 'follow',
           headers: {
             'Content-Type': 'text/plain;charset=utf-8'
           },
