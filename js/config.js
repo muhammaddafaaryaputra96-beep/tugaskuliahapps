@@ -1,16 +1,16 @@
 /**
  * config.js — Konfigurasi Lingkungan Frontend TugasKuliah Apps
- * Arsitektur: GAS Pro API (decoupled SPA frontend di GitHub Pages)
  * Versi: 1.0.0
  */
 
-const CONFIG = GAS_URL: 'https://script.google.com/macros/s/AKfycbzWHcAPE-KfVPaXiK0gdv6ICumugcYiCdncKtpB92qV7DYVszZKk4Z-3MdKpbLTe-AUCg/exec';
+const CONFIG = {
+  // Masukkan URL Web App Anda di dalam tanda petik di bawah ini:
+  GAS_URL: 'https://tugaskuliahapps.vercel.app/',
   
   APP_NAME: 'TugasKuliah Apps',
   APP_VERSION: '1.0.0',
   APP_SUBTITLE: 'Your Academic Productivity Assistant, Powered by AI',
   
-  // Storage keys untuk localStorage
   STORAGE_KEYS: {
     TOKEN: 'tk_session_token',
     USER: 'tk_user_profile',
@@ -18,7 +18,6 @@ const CONFIG = GAS_URL: 'https://script.google.com/macros/s/AKfycbzWHcAPE-KfVPaX
     DASHBOARD_CACHE: 'tk_dashboard_cache'
   },
 
-  // Konfigurasi Paket Langganan
   PLANS: {
     FREE: {
       name: 'Free / Mahasiswa',
@@ -41,6 +40,5 @@ const CONFIG = GAS_URL: 'https://script.google.com/macros/s/AKfycbzWHcAPE-KfVPaX
   }
 };
 
-// Global aliases untuk kemudahan akses di modul-modul lain
 const GAS_URL = CONFIG.GAS_URL;
 const APP_VERSION = CONFIG.APP_VERSION;
