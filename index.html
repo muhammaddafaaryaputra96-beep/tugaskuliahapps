@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TugasKuliah Apps — Asisten Produktivitas Akademik AI</title>
+  <meta name="description" content="Asisten produktivitas akademik terpadu bertenaga AI Gemini 1.5 Pro untuk mahasiswa: skripsi, makalah, referensi jurnal, dan presentasi Google Slides." />
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Material Symbols Outlined (Google Stitch standard) -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#4F46E5",
+            "primary-dark": "#3730A3",
+            "primary-container": "#4F46E5",
+            secondary: "#7C3AED",
+            "accent-cta": "#F59E0B",
+            "background-canvas": "#F5F4FF",
+            "surface-card": "#FFFFFF",
+            "surface-admin": "#1E1B4B",
+            "text-primary": "#0F172A",
+            "text-secondary": "#64748B",
+            "border-slate": "#E2E8F0"
+          },
+          fontFamily: {
+            sans: ["Plus Jakarta Sans", "system-ui", "sans-serif"],
+            mono: ["JetBrains Mono", "monospace"]
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="css/style.css" />
+
+  <!-- Chart.js CDN (untuk dashboard grafik & analitik sistem) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body class="bg-[#F5F4FF] text-slate-900 font-sans antialiased min-h-screen selection:bg-purple-100 selection:text-indigo-700">
+  
+  <!-- Root SPA App Container -->
+  <div id="app">
+    <div class="min-h-screen flex items-center justify-center bg-[#F5F4FF]">
+      <div class="flex flex-col items-center gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-600/30 animate-pulse">
+          <span class="material-symbols-outlined text-[28px]">school</span>
+        </div>
+        <div class="text-sm font-semibold text-slate-700">Memuat TugasKuliah Apps...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-[9999] flex flex-col gap-2 pointer-events-none max-w-sm w-full px-4"></div>
+
+  <!-- Application Modular Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/projects.js"></script>
+  <script src="js/references.js"></script>
+  <script src="js/slides.js"></script>
+  <script src="js/groups.js"></script>
+  <script src="js/templates.js"></script>
+  <script src="js/billing.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
